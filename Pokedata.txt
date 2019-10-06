@@ -1,0 +1,55 @@
+Chrisodon
+Fire
+50
+160
+69
+-
+Flame Spit/50/100/36/Fire
+Growl/0/100/20/Normal
+Tail Whip/0/90/15/Normal
+Tackle/50/100/20/Normal
+Mouse-Chucks/65/85/8/Normal
+Willmo Struck/60/100/20/Steel
+-
+Pikachu
+Electric
+50
+128
+70
+-
+Thunder/70/85/8/Electric
+Volt Switch/70/85/8/Electric
+Electro Ball/70/85/8/Electric
+Thunder Wave/70/85/8/Electric
+Gay/99/100/12/Fairy
+-
+Flowdart
+Grass
+50
+89
+97
+-
+Bullet Seed/25/90/15/Grass
+Doozy Dart/10/75/20/Poison
+Leer/0/100/15/Normal
+Dance Of His People/0/100/5/Grass
+-
+Balbark
+Grass
+50
+101
+117
+-
+
+-
+Riffhogany
+Grass/Electric
+50
+120
+132
+-
+Power Chord/90/100/15/Electric
+Energy Ball/60/100/25/Grass
+
+
+[<__main__.pokemon object at 0x03C7C490>, ['Bullet Seed', '25', '90', '15', 'Grass'], 1]

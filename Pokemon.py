@@ -174,75 +174,69 @@ def getPokemonFromFile(name):
 	return pokemon(name, Type, level, hp, speed, moveset)
 	
  
-def turn(trainer1TurnData, trainer2TurnData):
-    #Turn data = [0] = Pokemon | [1] = Move | [2] = priority
+def turn(turnData):
+    #Turn data = [0] = Pokemon object | [1] = Move | [2] = Trainer object
     global trainer1MoveSelected
     global trainer2MoveSelected
     global trainer1Data
     global trainer2Data
 
-    if(trainer1TurnData[2] == 1):
-        #Trainer 1's pokemon moves first
-        aObj = 0
-        aMove = 1
-        aPriority = 2
+    #For primary array
+    aFirst = 0
+    aSecond = 1
 
-        #for move set
-        aName = 0
-        aDamage = 1
-        aAccuracy = 2
-        aPP = 3
-        aType = 4
+    #For turnData scope array
+    aPokemon = 0
+    aMove = 1
+    aTrainer = 2
 
-        #ANNOUNCE
-        print(Trainer1.name + "'s " + str(trainer1TurnData[aObj].name) + " used " + str(trainer1TurnData[aMove][aName]))
-        
-        #EXECUTE
+    #for move set array
+    aName = 0
+    aDamage = 1
+    aAccuracy = 2
+    aPP = 3
+    aType = 4
 
-        #Getting index of used move
-        #moveIndexTemp = 0
-        #for move in Trainer1.activePokemon.moveset:
-        #    if(move == trainer1Data[1]):
-        #        moveindex = moveIndexTemp
-        #    moveIndexTemp += 1
+    #ANNOUNCE
+    print(turnData[aFirst][aTrainer].name + "'s " + str(turnData[aFirst][aPokemon].name) + " used " + str(turnData[aFirst][aMove][aName]))
+    
+    #EXECUTE
 
-        #for the sake of efficiency, calculate accuracy first
-        if(trainer1TurnData[aMove][aAccuracy] == 100 or random.randrange(0,100) <= int(trainer1TurnData[aMove][aAccuracy])):
+    #Getting index of used move
+    #moveIndexTemp = 0
+    #for move in Trainer1.activePokemon.moveset:
+    #    if(move == trainer1Data[1]):
+    #        moveindex = moveIndexTemp
+    #    moveIndexTemp += 1
 
-
-            #Calculate damage to opponent
-            baseDamage = trainer1TurnData[aMove][aDamage] #Damage
-            #Determine if stab, if so, 50% more damage
-            if(trainer1TurnData[aObj].isSameType(str(trainer1TurnData[aMove][aType]))):
-           	#Is stab
-            	baseDamage = baseDamage * 1.5
-
-            print("Hit for " + str(baseDamage))
-
-	    #If move missed, announce to user
-        else:
-            print(trainer1TurnData[aMove][aName] +  " has missed")
+    #for the sake of efficiency, calculate accuracy first
+    if(turnData[aFirst][aMove][aAccuracy] == 100 or random.randrange(0,100) <= int(turnData[aFirst][aMove][aAccuracy])):
 
 
+        #Calculate damage to opponent
+        baseDamage = int(turnData[aFirst][aMove][aDamage]) #Damage
+        #Determine if stab, if so, 50% more damage
+        if(turnData[aFirst][aPokemon].isSameType(str(turnData[aFirst][aMove][aType]))):
+       	#Is stab
+        	baseDamage = int(round(baseDamage * 1.5))
 
-        
-        
+        print("Hit for " + str(baseDamage))
 
-
-        #Decrementing pp
-        Trainer1.activePokemon.moveset[0][3] = int(Trainer1.activePokemon.moveset[0][3]) - 1
-
-        
-
-
-        #Trainer 2's pokemon moves last
-        print(Trainer2.name + "'s " + str(trainer2Data[0].name) + " used " + str(trainer2Data[1]))
+    #If move missed, announce to user
     else:
-        #Trainer 2's pokemon moves first
-        print(Trainer2.name + "'s " + str(trainer2Data[0].name) + " used " + str(trainer2Data[1]))
-        
-        #Trainer 1's pokemon moves last
-        print(Trainer1.name + "'s " + str(trainer1Data[0].name) + " used " + str(trainer1Data[1]))
+        print(turnData[aFirst][aMove][aName] +  " has missed")
+
+
+
+
+    #Decrementing pp - Use move index
+    Trainer1.activePokemon.moveset[0][3] = int(Trainer1.activePokemon.moveset[0][3]) - 1
+
+    
+
+
+    #Trainer 2's pokemon moves last
+    print(turnData[aSecond][aTrainer].name + "'s " + str(turnData[aSecond][aPokemon].name) + " used " + str(turnData[aSecond][aMove][aName]))
 	
 	
 
@@ -261,24 +255,28 @@ def movePressed(Trainer, move):
 	global trainer2MoveSelected
 	global trainer1Data
 	global trainer2Data
+	global turnData
 
 	if(Trainer == Trainer1):
 		trainer1MoveSelected = True
-		trainer1Data = [Trainer1.activePokemon, move]
+		trainer1Data = [Trainer1.activePokemon, move, Trainer1]
 	if(Trainer == Trainer2):
 		trainer2MoveSelected = True
-		trainer2Data = [Trainer2.activePokemon, move]
+		trainer2Data = [Trainer2.activePokemon, move, Trainer2]
 
 	if(trainer1MoveSelected == True and trainer2MoveSelected == True):
 		if(Trainer1.activePokemon.speed > Trainer2.activePokemon.speed):
-			trainer1Data.append(1)
-			trainer2Data.append(2)
+			turnData = [trainer1Data, trainer2Data]
+			#trainer1Data.append(1)
+			#trainer2Data.append(2)
 		else:
-			trainer2Data.append(1)
-			trainer1Data.append(2)
+			turnData = [trainer2Data, trainer1Data]
+			#trainer2Data.append(1)
+			#trainer1Data.append(2)
 
 		
-		turn(trainer1Data, trainer2Data)
+		turn(turnData)
+		turndata = []
 
 
 
@@ -289,6 +287,7 @@ trainer1MoveSelected = False
 trainer2MoveSelected = False
 trainer1Data = []
 trainer2Data = []
+turnData = []
 
 
 

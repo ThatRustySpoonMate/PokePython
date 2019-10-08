@@ -75,7 +75,8 @@ class pokemon:
 		self.type = Type
 		self.level = int(level)
 		self.hp = int(hp)
-		self.speed = speed
+		self.maxHp = int(hp)
+		self.speed = int(speed)
 		self.moveset = moveset
 		self.status = status
 		self.attack = attack
@@ -94,9 +95,43 @@ class pokemon:
 		else:
 			return False
 
+	def getEffectiveness(self, Type):
+		if("/" in self.type):
+			myType = self.type.split("/")
+		else:
+			myType = self.type
 
-			
+		print("My Type: " + str(myType))
+		print("Length: " + str(len(myType)))
 
+		moveTypeIndex = locateTypeInChart(Type)
+		print("Move type index: " + str(moveTypeIndex))
+		if(len(myType) == 1):
+			pokeTypeIndex = locateTypeInChart(myType[0])
+			print("poketypeindex arg: " + str(myType[0]))
+
+			print("Poke type index + 1: " + str(pokeTypeIndex + 1))
+			return superEffectiveChart[moveTypeIndex + 1][pokeTypeIndex + 1]
+
+		elif(len(myType) == 2):
+			return superEffectiveChart[moveTypeIndex + 1][locateTypeInChart(myType[0]) + 1] * superEffectiveChart[moveTypeIndex + 1][locateTypeInChart(myType[1]) + 1]
+
+            
+
+
+
+def locateTypeInChart(desType):
+    #desType = desType.lower()
+    i = 0
+    index = 0
+
+    for Type in superEffectiveChart[0]:
+        if(Type == desType):
+        	index = i
+        i += 1
+
+    return index
+        
 
 def getPokemonFromFile(name):
 	script_dir = os.path.dirname(__file__) #<-- absolute directory the script is in
@@ -174,75 +209,73 @@ def getPokemonFromFile(name):
 	return pokemon(name, Type, level, hp, speed, moveset)
 	
  
-def turn(trainer1TurnData, trainer2TurnData):
-    #Turn data = [0] = Pokemon | [1] = Move | [2] = priority
+def turn(turnData):
+    #Turn data = [0] = Pokemon object | [1] = Move | [2] = Trainer object
     global trainer1MoveSelected
     global trainer2MoveSelected
     global trainer1Data
     global trainer2Data
 
-    if(trainer1TurnData[2] == 1):
-        #Trainer 1's pokemon moves first
-        aObj = 0
-        aMove = 1
-        aPriority = 2
+    #For primary array
+    aFirst = 0
+    aSecond = 1
 
-        #for move set
-        aName = 0
-        aDamage = 1
-        aAccuracy = 2
-        aPP = 3
-        aType = 4
+    #For turnData scope array
+    aPokemon = 0
+    aMove = 1
+    aTrainer = 2
 
-        #ANNOUNCE
-        print(Trainer1.name + "'s " + str(trainer1TurnData[aObj].name) + " used " + str(trainer1TurnData[aMove][aName]))
-        
-        #EXECUTE
+    #for move set array
+    aName = 0
+    aDamage = 1
+    aAccuracy = 2
+    aPP = 3
+    aType = 4
 
-        #Getting index of used move
-        #moveIndexTemp = 0
-        #for move in Trainer1.activePokemon.moveset:
-        #    if(move == trainer1Data[1]):
-        #        moveindex = moveIndexTemp
-        #    moveIndexTemp += 1
+    #ANNOUNCE
+    print(turnData[aFirst][aTrainer].name + "'s " + str(turnData[aFirst][aPokemon].name) + " used " + str(turnData[aFirst][aMove][aName]))
+    
+    #EXECUTE
 
-        #for the sake of efficiency, calculate accuracy first
-        if(trainer1TurnData[aMove][aAccuracy] == 100 or random.randrange(0,100) <= int(trainer1TurnData[aMove][aAccuracy])):
+    #Getting index of used move
+    #moveIndexTemp = 0
+    #for move in Trainer1.activePokemon.moveset:
+    #    if(move == trainer1Data[1]):
+    #        moveindex = moveIndexTemp
+    #    moveIndexTemp += 1
 
+    #for the sake of efficiency, calculate accuracy first
+    if(turnData[aFirst][aMove][aAccuracy] == 100 or random.randrange(0,100) <= int(turnData[aFirst][aMove][aAccuracy])):
+        #Calculate damage to opponent
+        damage = int(turnData[aFirst][aMove][aDamage]) #damage
+        #Determine if same-type-attack, if so, 50% more damage
+        if(turnData[aFirst][aPokemon].isSameType(str(turnData[aFirst][aMove][aType]))):
+        	damage = int(round(damage * 1.5))
 
-            #Calculate damage to opponent
-            baseDamage = trainer1TurnData[aMove][aDamage] #Damage
-            #Determine if stab, if so, 50% more damage
-            if(trainer1TurnData[aObj].isSameType(str(trainer1TurnData[aMove][aType]))):
-           	#Is stab
-            	baseDamage = baseDamage * 1.5
+        moveEffectiveness = turnData[aSecond][aPokemon].getEffectiveness(turnData[aFirst][aMove][aType])
 
-            print("Hit for " + str(baseDamage))
+        damage *= moveEffectiveness
 
-	    #If move missed, announce to user
-        else:
-            print(trainer1TurnData[aMove][aName] +  " has missed")
-
-
-
-        
-        
+        print("Hit for " + str(damage))
+        print(moveEffectiveness)
 
 
-        #Decrementing pp
-        Trainer1.activePokemon.moveset[0][3] = int(Trainer1.activePokemon.moveset[0][3]) - 1
-
-        
 
 
-        #Trainer 2's pokemon moves last
-        print(Trainer2.name + "'s " + str(trainer2Data[0].name) + " used " + str(trainer2Data[1]))
+
+    #If move missed, announce to user
     else:
-        #Trainer 2's pokemon moves first
-        print(Trainer2.name + "'s " + str(trainer2Data[0].name) + " used " + str(trainer2Data[1]))
-        
-        #Trainer 1's pokemon moves last
-        print(Trainer1.name + "'s " + str(trainer1Data[0].name) + " used " + str(trainer1Data[1]))
+        print(turnData[aFirst][aMove][aName] +  " has missed")
+
+
+    #Decrementing pp - Use move index
+    Trainer1.activePokemon.moveset[0][3] = int(Trainer1.activePokemon.moveset[0][3]) - 1
+
+    
+
+
+    #Trainer 2's pokemon moves last
+    print(turnData[aSecond][aTrainer].name + "'s " + str(turnData[aSecond][aPokemon].name) + " used " + str(turnData[aSecond][aMove][aName]))
 	
 	
 
@@ -261,24 +294,28 @@ def movePressed(Trainer, move):
 	global trainer2MoveSelected
 	global trainer1Data
 	global trainer2Data
+	global turnData
 
 	if(Trainer == Trainer1):
 		trainer1MoveSelected = True
-		trainer1Data = [Trainer1.activePokemon, move]
+		trainer1Data = [Trainer1.activePokemon, move, Trainer1]
 	if(Trainer == Trainer2):
 		trainer2MoveSelected = True
-		trainer2Data = [Trainer2.activePokemon, move]
+		trainer2Data = [Trainer2.activePokemon, move, Trainer2]
 
 	if(trainer1MoveSelected == True and trainer2MoveSelected == True):
 		if(Trainer1.activePokemon.speed > Trainer2.activePokemon.speed):
-			trainer1Data.append(1)
-			trainer2Data.append(2)
+			turnData = [trainer1Data, trainer2Data]
+			#trainer1Data.append(1)
+			#trainer2Data.append(2)
 		else:
-			trainer2Data.append(1)
-			trainer1Data.append(2)
+			turnData = [trainer2Data, trainer1Data]
+			#trainer2Data.append(1)
+			#trainer1Data.append(2)
 
 		
-		turn(trainer1Data, trainer2Data)
+		turn(turnData)
+		turnData = []
 
 
 
@@ -289,6 +326,7 @@ trainer1MoveSelected = False
 trainer2MoveSelected = False
 trainer1Data = []
 trainer2Data = []
+turnData = []
 
 
 
@@ -307,6 +345,10 @@ class Demo1:
         self.Title = tk.Text(self.frame, height = 1, width = len(Trainer1.name))
         #self.EnemySprite = tk.Label(self.frame, image = Trainer2.activePokemon.sprite)
 
+        self.PokemonDescription = tk.Text(self.frame, height = 9, width = 16)
+        #self.PokemonDescription.configure(state = DISABLED)
+
+
         self.buttonPlayer1Move1.grid(column = 0, row = 2)
         self.buttonPlayer1Move2.grid(column = 0, row = 3)
         self.PokeSprite.grid(column = 1, row = 1)
@@ -317,12 +359,25 @@ class Demo1:
         self.Title.grid(column = 0, row = 0)
         self.Title.insert(tk.END, Trainer1.name)
 
+        self.PokemonDescription.grid(column = 4, row = 0)
+        self.updateWindow()
+
         self.frame.pack()
 
 
     def new_window(self):
         self.newWindow = tk.Toplevel(self.master)
         self.app = Demo2(self.newWindow)
+
+
+    def updateWindow(self):
+    	self.PokemonDescription.configure(state = NORMAL)
+    	self.PokemonDescription.delete(1.0, END)
+    	updatedText = str(Trainer1.activePokemon.name) + "\n\n" + str(Trainer1.activePokemon.Type) + "\nHP: " + str(Trainer1.activePokemon.hp) + "/" + str(Trainer1.activePokemon.maxHp) + "\nLVL: " + str(Trainer1.activePokemon.level) + "\nSpeed: " + str(Trainer1.activePokemon.speed) + "\nAtk: " + str(Trainer1.activePokemon.attack) + "\nDef: " + str(Trainer1.activePokemon.defense) + "\nStatus: " + str(Trainer1.activePokemon.status) 
+    	self.PokemonDescription.insert(END, updatedText)
+
+    	self.PokemonDescription.configure(state = DISABLED)
+
 
 class Demo2:
     def __init__(self, master):
@@ -432,7 +487,7 @@ root.mainloop()
 
 #Combat sequence
 trainerOrder = [0, 0]
-#playsound(audioFolder + battleMusic, True)
+
 #while(Trainer1.checkAllLife() == True and Trainer2.checkAllLife() == True):
 	#Determine who moves first 
 

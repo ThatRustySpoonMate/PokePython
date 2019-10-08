@@ -75,7 +75,8 @@ class pokemon:
 		self.type = Type
 		self.level = int(level)
 		self.hp = int(hp)
-		self.speed = speed
+		self.maxHp = int(hp)
+		self.speed = int(speed)
 		self.moveset = moveset
 		self.status = status
 		self.attack = attack
@@ -94,9 +95,43 @@ class pokemon:
 		else:
 			return False
 
+	def getEffectiveness(self, Type):
+		if("/" in self.type):
+			myType = self.type.split("/")
+		else:
+			myType = self.type
 
-			
+		print("My Type: " + str(myType))
+		print("Length: " + str(len(myType)))
 
+		moveTypeIndex = locateTypeInChart(Type)
+		print("Move type index: " + str(moveTypeIndex))
+		if(len(myType) == 1):
+			pokeTypeIndex = locateTypeInChart(myType[0])
+			print("poketypeindex arg: " + str(myType[0]))
+
+			print("Poke type index + 1: " + str(pokeTypeIndex + 1))
+			return superEffectiveChart[moveTypeIndex + 1][pokeTypeIndex + 1]
+
+		elif(len(myType) == 2):
+			return superEffectiveChart[moveTypeIndex + 1][locateTypeInChart(myType[0]) + 1] * superEffectiveChart[moveTypeIndex + 1][locateTypeInChart(myType[1]) + 1]
+
+            
+
+
+
+def locateTypeInChart(desType):
+    #desType = desType.lower()
+    i = 0
+    index = 0
+
+    for Type in superEffectiveChart[0]:
+        if(Type == desType):
+        	index = i
+        i += 1
+
+    return index
+        
 
 def getPokemonFromFile(name):
 	script_dir = os.path.dirname(__file__) #<-- absolute directory the script is in
@@ -211,22 +246,26 @@ def turn(turnData):
 
     #for the sake of efficiency, calculate accuracy first
     if(turnData[aFirst][aMove][aAccuracy] == 100 or random.randrange(0,100) <= int(turnData[aFirst][aMove][aAccuracy])):
-
-
         #Calculate damage to opponent
-        baseDamage = int(turnData[aFirst][aMove][aDamage]) #Damage
-        #Determine if stab, if so, 50% more damage
+        damage = int(turnData[aFirst][aMove][aDamage]) #damage
+        #Determine if same-type-attack, if so, 50% more damage
         if(turnData[aFirst][aPokemon].isSameType(str(turnData[aFirst][aMove][aType]))):
-       	#Is stab
-        	baseDamage = int(round(baseDamage * 1.5))
+        	damage = int(round(damage * 1.5))
 
-        print("Hit for " + str(baseDamage))
+        moveEffectiveness = turnData[aSecond][aPokemon].getEffectiveness(turnData[aFirst][aMove][aType])
+
+        damage *= moveEffectiveness
+
+        print("Hit for " + str(damage))
+        print(moveEffectiveness)
+
+
+
+
 
     #If move missed, announce to user
     else:
         print(turnData[aFirst][aMove][aName] +  " has missed")
-
-
 
 
     #Decrementing pp - Use move index
@@ -276,7 +315,7 @@ def movePressed(Trainer, move):
 
 		
 		turn(turnData)
-		turndata = []
+		turnData = []
 
 
 
@@ -306,6 +345,10 @@ class Demo1:
         self.Title = tk.Text(self.frame, height = 1, width = len(Trainer1.name))
         #self.EnemySprite = tk.Label(self.frame, image = Trainer2.activePokemon.sprite)
 
+        self.PokemonDescription = tk.Text(self.frame, height = 9, width = 16)
+        #self.PokemonDescription.configure(state = DISABLED)
+
+
         self.buttonPlayer1Move1.grid(column = 0, row = 2)
         self.buttonPlayer1Move2.grid(column = 0, row = 3)
         self.PokeSprite.grid(column = 1, row = 1)
@@ -316,12 +359,25 @@ class Demo1:
         self.Title.grid(column = 0, row = 0)
         self.Title.insert(tk.END, Trainer1.name)
 
+        self.PokemonDescription.grid(column = 4, row = 0)
+        self.updateWindow()
+
         self.frame.pack()
 
 
     def new_window(self):
         self.newWindow = tk.Toplevel(self.master)
         self.app = Demo2(self.newWindow)
+
+
+    def updateWindow(self):
+    	self.PokemonDescription.configure(state = NORMAL)
+    	self.PokemonDescription.delete(1.0, END)
+    	updatedText = str(Trainer1.activePokemon.name) + "\n\n" + str(Trainer1.activePokemon.Type) + "\nHP: " + str(Trainer1.activePokemon.hp) + "/" + str(Trainer1.activePokemon.maxHp) + "\nLVL: " + str(Trainer1.activePokemon.level) + "\nSpeed: " + str(Trainer1.activePokemon.speed) + "\nAtk: " + str(Trainer1.activePokemon.attack) + "\nDef: " + str(Trainer1.activePokemon.defense) + "\nStatus: " + str(Trainer1.activePokemon.status) 
+    	self.PokemonDescription.insert(END, updatedText)
+
+    	self.PokemonDescription.configure(state = DISABLED)
+
 
 class Demo2:
     def __init__(self, master):
@@ -431,7 +487,7 @@ root.mainloop()
 
 #Combat sequence
 trainerOrder = [0, 0]
-#playsound(audioFolder + battleMusic, True)
+
 #while(Trainer1.checkAllLife() == True and Trainer2.checkAllLife() == True):
 	#Determine who moves first 
 

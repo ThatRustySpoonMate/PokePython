@@ -1,7 +1,8 @@
 import os, time, random, traceback, tkinter as tk #Python built-in modules
 import Icon, Conventions, PokemonManager as pm #My own modules 
-from playsound import playsound
+#from playsound import playsound
 from PIL import ImageTk, Image
+from pygame import mixer 
 
 
 script_dir = os.path.dirname(__file__) #<-- absolute directory the script is in
@@ -12,7 +13,7 @@ rel_path = "PokeSprites"
 spriteFolder = os.path.join(script_dir, rel_path)
 battleMusic = "\\Attack_On_Titan.mp3"
 
-
+os.system('cls')
 
 class trainer:
     def __init__(self, name, party, activePokemon):
@@ -140,11 +141,6 @@ def turn(turnData):
             moveIndexTemp += 1
         #Decrementing pp - Using move index
         turnData[aFirst][aTrainer].activePokemon.moveset[moveindex][3] = int(turnData[aFirst][aTrainer].activePokemon.moveset[moveindex][3]) - 1
-
-        #Run each status condition that affects the user after their turn
-        for statusEffect in turnData[aFirst][aPokemon].status:
-            if(statusEffect.occurence == "after"):
-                statusEffect.performEffect()
                 
 
     #Run each status condition that affects the user before their turn
@@ -202,6 +198,12 @@ def turn(turnData):
             moveIndexTemp += 1
         #Decrementing pp - Using move index
         turnData[aSecond][aTrainer].activePokemon.moveset[moveindex][3] = int(turnData[aSecond][aTrainer].activePokemon.moveset[moveindex][3]) - 1
+
+        print("")
+        #Run each status condition that affects the user after their turn
+        for statusEffect in turnData[aFirst][aPokemon].status:
+            if(statusEffect.occurence == "after"):
+                statusEffect.performEffect()
 
         #Run each status condition that affects the user after their turn
         for statusEffect in turnData[aSecond][aPokemon].status:
@@ -340,10 +342,25 @@ class Trainer1ControlWindow:
         self.PokemonDescription.configure(state = tk.DISABLED)
 
         #Updating move-set and PP for active pokemon and disable moves that dont have any pp left
-        self.buttonPlayer1Move1.configure(text = Trainer1.activePokemon.moveset[0][0] + "\n(" + str(Trainer1.activePokemon.moveset[0][3]) + ")")
-        self.buttonPlayer1Move2.configure(text = Trainer1.activePokemon.moveset[1][0] + "\n(" + str(Trainer1.activePokemon.moveset[1][3]) + ")")
-        self.buttonPlayer1Move3.configure(text = Trainer1.activePokemon.moveset[2][0] + "\n(" + str(Trainer1.activePokemon.moveset[2][3]) + ")")
-        self.buttonPlayer1Move4.configure(text = Trainer1.activePokemon.moveset[3][0] + "\n(" + str(Trainer1.activePokemon.moveset[3][3]) + ")")
+        if(int(Trainer1.activePokemon.moveset[0][3]) > 0):
+            self.buttonPlayer1Move1.configure(text = Trainer1.activePokemon.moveset[0][0] + "\n(" + str(Trainer1.activePokemon.moveset[0][3]) + ")")
+        else:
+            self.buttonPlayer1Move1.configure(state = tk.DISABLED)
+
+        if(int(Trainer1.activePokemon.moveset[1][3]) > 0):
+            self.buttonPlayer1Move2.configure(text = Trainer1.activePokemon.moveset[1][0] + "\n(" + str(Trainer1.activePokemon.moveset[1][3]) + ")")
+        else:
+            self.buttonPlayer1Move2.configure(state = tk.DISABLED)
+
+        if(int(Trainer1.activePokemon.moveset[2][3]) > 0):
+            self.buttonPlayer1Move3.configure(text = Trainer1.activePokemon.moveset[2][0] + "\n(" + str(Trainer1.activePokemon.moveset[2][3]) + ")")
+        else:
+            self.buttonPlayer1Move3.configure(state = tk.DISABLED)
+
+        if(int(Trainer1.activePokemon.moveset[3][3]) > 0):
+            self.buttonPlayer1Move4.configure(text = Trainer1.activePokemon.moveset[3][0] + "\n(" + str(Trainer1.activePokemon.moveset[3][3]) + ")")
+        else:
+            self.buttonPlayer1Move4.configure(state = tk.DISABLED)
 
 
 
@@ -407,10 +424,26 @@ class Trainer2ControlWindow:
         self.PokemonDescription.configure(state = tk.DISABLED)
 
         #Updating move-set and PP for active pokemon 
-        self.buttonPlayer2Move1.configure(text = Trainer2.activePokemon.moveset[0][0] + "\n(" + str(Trainer2.activePokemon.moveset[0][3]) + ")")
-        self.buttonPlayer2Move2.configure(text = Trainer2.activePokemon.moveset[1][0] + "\n(" + str(Trainer2.activePokemon.moveset[1][3]) + ")")
-        self.buttonPlayer2Move3.configure(text = Trainer2.activePokemon.moveset[2][0] + "\n(" + str(Trainer2.activePokemon.moveset[2][3]) + ")")
-        self.buttonPlayer2Move4.configure(text = Trainer2.activePokemon.moveset[3][0] + "\n(" + str(Trainer2.activePokemon.moveset[3][3]) + ")")
+
+        if(int(Trainer2.activePokemon.moveset[0][3]) > 0):
+            self.buttonPlayer2Move1.configure(text = Trainer2.activePokemon.moveset[0][0] + "\n(" + str(Trainer2.activePokemon.moveset[0][3]) + ")")
+        else:
+            self.buttonPlayer2Move1.configure(state = tk.DISABLED)
+        
+        if(int(Trainer2.activePokemon.moveset[1][3]) > 0):
+            self.buttonPlayer2Move2.configure(text = Trainer2.activePokemon.moveset[1][0] + "\n(" + str(Trainer2.activePokemon.moveset[1][3]) + ")")
+        else:
+            self.buttonPlayer2Move2.configure(state = tk.DISABLED)
+        
+        if(int(Trainer2.activePokemon.moveset[2][3]) > 0):
+            self.buttonPlayer2Move3.configure(text = Trainer2.activePokemon.moveset[2][0] + "\n(" + str(Trainer2.activePokemon.moveset[2][3]) + ")")
+        else:
+            self.buttonPlayer2Move3.configure(state = tk.DISABLED)
+        
+        if(int(Trainer2.activePokemon.moveset[3][3]) > 0):
+            self.buttonPlayer2Move4.configure(text = Trainer2.activePokemon.moveset[3][0] + "\n(" + str(Trainer2.activePokemon.moveset[3][3]) + ")")
+        else:
+            self.buttonPlayer2Move4.configure(state = tk.DISABLED)
 
 
 
@@ -491,6 +524,10 @@ Trainer2 = trainer(name2, Trainer2SelectedPokemon, Trainer2SelectedPokemon[0])
 root = tk.Tk()
 
 Player1Window = Trainer1ControlWindow(root) 
+
+mixer.init()
+mixer.music.load(audioFolder + battleMusic)
+mixer.music.play(20)
 
 root.title("Control")
 Player1Window.new_window()

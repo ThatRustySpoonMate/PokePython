@@ -22,7 +22,25 @@ Fire/Bug
 140
 225
 -
-Flame Phlegm/55/100/30/1/Fire/True/30/0/0/other/burn
+Flame Phlegm/50/100/30/1/Fire/True/30/0/0/other/burn
+Mouse-Chucks/60/85/8/1/Steel/True/20/0/0/other/confusion
+Willmo Struck/50/100/20/1/Electric/True/25/0/0/other/paralyze
+Malware Mash/75/80/10/1/Steel/True
+Logic Error/30/100/6/1/Bug/False/75/33/0/other/confusion
+Syntax Error/30/100/6/1/Bug/False/75/33/0/other/flinch
+Run-time Error/30/100/6/1/Bug/False/75/33/0/other/spdDec
+Debugger/70/100/20/1/Fire/True
+-
+
+Willmola
+Fire/Bug
+50
+205
+84
+149
+248
+-
+Flame Vomit/60/100/30/1/Fire/True/30/0/0/other/burn
 Mouse-Chucks/60/85/8/1/Steel/True/20/0/0/other/confusion
 Willmo Struck/50/100/20/1/Electric/True/25/0/0/other/paralyze
 Malware Mash/80/80/10/1/Steel/True
@@ -30,6 +48,7 @@ Logic Error/30/100/6/1/Bug/False/75/33/0/other/confusion
 Syntax Error/30/100/6/1/Bug/False/75/33/0/other/flinch
 Run-time Error/30/100/6/1/Bug/False/75/33/0/other/spdDec
 Debugger/70/100/20/1/Fire/True
+Wibble-Whip/90/85/5/0/Normal/True/100/33/0/self/atkInc/100/33/0/self/defInc/100/33/0/self/spdInc
 -
 
 
@@ -60,7 +79,7 @@ Grass
 -
 Bullet Seed/25/90/15/1/Grass/True
 Doozy Dart/10/75/20/1/Poison/True/60/0/0/other/sleep
-Leer/0/100/15/1/Normal/False/100/33/0/self/defInc
+Leer/0/100/15/1/Normal/False/100/33/0/other/defDec
 Dance Of His People/0/100/5/1/Grass/False/100/33/0/self/atkInc
 -
 Balbark

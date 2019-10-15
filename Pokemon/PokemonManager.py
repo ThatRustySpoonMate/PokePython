@@ -79,7 +79,7 @@ class status:
                 print(str(self.master.name) + " is paralyzed.")
 
         elif(self.name == "freeze"):
-            if(random.randrange(0,100) >  self.chanceToThaw):
+            if(random.randrange(0,100) > self.chanceToThaw):
                 master.noTurn = True
                 print(str(self.master.name) + " is frozen solid.")
             else:
@@ -92,7 +92,7 @@ class status:
             print(str(self.master.name) + " burned for " + str(self.burnDamage) + ".")
 
         elif(self.name == "confusion"):
-            if(random.randrange(0, 100) == self.chanceForConfusion):
+            if(random.randrange(0, 100) <= self.chanceForConfusion):
                 print(str(self.master.name) + " hurt himself in confusion.")
                 self.master.takeDamage(self.confusionDamage, self.confusionDamageType, False)
            
@@ -145,7 +145,6 @@ class status:
         elif(self.name == "evaInc"):
             self.master.evasiveness = round(self.master.evasiveness * self.increaseFactor)
             print(str(self.master.name) + "'s evasiveness has been increased by " + str(self.increaseFactor) + "x!") 
-
 
         self.decrementTurnsLeft()
 
@@ -341,47 +340,21 @@ def locateTypeInChart(desType):
 
 
 def embedStatusEffects(move):
-    if(len(move) == 12):
-        move.append([])
-        move[12].append(move.pop(7))
-        move[11].append(move.pop(7))
-        move[10].append(move.pop(7))
-        move[9].append(move.pop(7))
-        move[8].append(move.pop(7))
+    moveLength = len(move)
+    if(moveLength > 7):
+        amountOfStatusEffects = int((moveLength -7) / 5)
+        i = 0
+        index = len(move) - 1
+        for i in range(0, amountOfStatusEffects):
+            p = 0
+            index += 1
+            move.append([])
+            for p in range(0, 5):
+                move[index].append(move.pop(7))
+                index -= 1
 
-    elif(len(move) == 17):
-        move.append([])
-        move[17].append(move.pop(7))
-        move[16].append(move.pop(7))
-        move[15].append(move.pop(7))
-        move[14].append(move.pop(7))
-        move[13].append(move.pop(7))
-        move.append([])
-        move[13].append(move.pop(7))
-        move[12].append(move.pop(7))
-        move[11].append(move.pop(7))
-        move[10].append(move.pop(7))
-        move[9].append(move.pop(7))
-
-    elif(len(move) == 22):
-        move.append([])
-        move[22].append(move.pop(7))
-        move[21].append(move.pop(7))
-        move[20].append(move.pop(7))
-        move[19].append(move.pop(7))
-        move[18].append(move.pop(7))
-        move.append([])
-        move[18].append(move.pop(7))
-        move[17].append(move.pop(7))
-        move[16].append(move.pop(7))
-        move[15].append(move.pop(7))
-        move[14].append(move.pop(7))
-        move.append([])
-        move[14].append(move.pop(7))
-        move[13].append(move.pop(7))
-        move[12].append(move.pop(7))
-        move[11].append(move.pop(7))
-        move[10].append(move.pop(7))
+    else:
+        return move
 
     listLength = len(move)
     statusEffectCount = listLength - 7
@@ -403,37 +376,3 @@ def embedStatusEffects(move):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#statusEffectCount = round((len(move) - 6) / 5)
-#	currentIndex = 6
-#	currentBackwardsIndex = 0
-#	arrayStartIndex = 6 + 5 * statusEffectCount
-#	i = 0
-#	for i in range(0, statusEffectCount):
-#		move.append([])
-#	i = 0
-#	while i < statusEffectCount:
-#		#Compress all status effect data into one list and embed into existing list
-#		move[arrayStartIndex - currentBackwardsIndex].append(move.pop(currentIndex))
-#		currentBackwardsIndex += 1
-#		i += 0.2
-#		if(i % 1 == 0):
-#			currentBackwardsIndex -= 1
-#			i += (1 / (statusEffectCount * 2)) / statusEffectCount
-#
-#	return move

@@ -49,17 +49,4 @@ def locateTypeInChart(desType):
 #print("thunder wave".replace(" ", ""))
 
 
-def heh(attack, defense):
-    return 1 + ((attack - defense) / 300)
-
-
-
-#print( 70* heh(113, 256))
-
-myStatus = ["normal", "paralyze", "freeze", "poison"]#["sleep", "paralyze", "freeze", "confusion"]
-
-#print("sleep" in myStatus or "freeze" in myStatus or "paralyze" in myStatus)
-    #miss a turn
-#print(myStatus[1:])
-
-print(math.ceil(4.3254))
+print((12-7)/5)

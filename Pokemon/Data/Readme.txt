@@ -35,7 +35,7 @@ DebuffMod (used for reducing/increasing def atk and spd) > decimal
 StatusAmount(used for healing pokemon) > int
 Target = self/other (only applies to status effect)
 StatusEffect > String 
-{means that you can have up to three as long as they are separated by "/"}
+{means that you can have an unlimited amount as long as they are separated by "/"}
 
 List of avaliable status effects
 - paralyze
